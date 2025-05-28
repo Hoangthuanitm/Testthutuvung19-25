@@ -1215,375 +1215,363 @@
     </footer>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAfy4QMD9_7PyFHpInNdKDRWuW4AYCtLJ4",
-            authDomain: "history-e4633.firebaseapp.com",
-            projectId: "history-e4633",
-            storageBucket: "history-e4633.firebasestorage.app",
-            messagingSenderId: "331974436893",
-            appId: "1:331974436893:web:10c3c6adf7b66d2b5fbef4",
-            measurementId: "G-DC055090BW"
-        };
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAfy4QMD9_7PyFHpInNdKDRWuW4AYCtLJ4",
+        authDomain: "history-e4633.firebaseapp.com",
+        projectId: "history-e4633",
+        storageBucket: "history-e4633.firebasestorage.app",
+        messagingSenderId: "331974436893",
+        appId: "1:331974436893:web:10c3c6adf7b66d2b5fbef4",
+        measurementId: "G-DC055090BW"
+    };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        const answerKey = {
-            1: 'のぼった', 2: 'しゅうりする', 3: 'きもの', 4: 'くうこう', 5: 'こうつう', 
-            6: 'しゅじん', 7: 'きる', 8: 'わたって', 9: 'しょうかいして', 10: 'かぐ',
-            11: 'カタログ', 12: '用事', 13: '飲み物', 14: '時間', 15: '書きました', 
-            16: '場所', 17: 'お茶', 18: '練習', 19: '思います', 20: '歩いて',
-            21: 'デザイン', 22: 'ねだん', 23: 'めがね', 24: 'おしいれ', 25: 'むり', 
-            26: '交通', 27: 'なみ', 28: 'まわす', 29: 'きっと', 30: 'さいきん',
-            31: '日曜日は あまり でかけません。', 32: '私は フランス語を べんきょうしています。', 
-            33: 'この町には ゆうめいな ビルが あります。', 34: '寝る 前に くつを きれいに しました。', 
-            35: 'ほっかいどうの おばさんは、父の あねです。'
-        };
+    const answerKey = {
+        1: 'のぼった', 2: 'しゅうりする', 3: 'きもの', 4: 'くうこう', 5: 'こうつう', 
+        6: 'しゅじん', 7: 'きる', 8: 'わたって', 9: 'しょうかいして', 10: 'かぐ',
+        11: 'カタログ', 12: '用事', 13: '飲み物', 14: '時間', 15: '書きました', 
+        16: '場所', 17: 'お茶', 18: '練習', 19: '思います', 20: '歩いて',
+        21: 'デザイン', 22: 'ねだん', 23: 'めがね', 24: 'おしいれ', 25: 'むり', 
+        26: '交通', 27: 'なみ', 28: 'まわす', 29: 'きっと', 30: 'さいきん',
+        31: '日曜日は あまり でかけません。', 32: '私は フランス語を べんきょうしています。', 
+        33: 'この町には ゆうめいな ビルが あります。', 34: '寝る 前に くつを きれいに しました。', 
+        35: 'ほっかいどうの おばさんは、父の あねです。'
+    };
 
-        const sectionPoints = {
-            1: 20, 2: 20, 3: 40, 4: 20
-        };
+    const sectionPoints = {
+        1: 20, 2: 20, 3: 40, 4: 20
+    };
 
-        const originalOptions = {
-            હ1: ['のぼった', 'のった', 'のりた', 'のぼた'],
-            q2: ['しゅりする', 'すりする', 'しゅうりする', 'すうりする'],
-            q3: ['りょうり', 'たてもの', 'けんぶつ', 'きもの'],
-            q4: ['くこう', 'くうこう', 'こうく', 'こうくう'],
-            q5: ['こうつ', 'つうこう', 'こうつう', 'こつう'],
-            q6: ['しゅじん', 'しゅうじん', 'しゅにん', 'しゅうにん'],
-            q7: ['くる', 'つきる', 'かぶる', 'きる'],
-            q8: ['くばって', 'わたって', 'もどって', 'はしって'],
-            q9: ['せつめいして', 'あんないして', 'なおして', 'しょうかいして'],
-            q10: ['かぐ', 'どうぐ', 'かど', 'かどう'],
-            q11: ['ガタログ', 'カダログ', 'カタログ', 'カタロク'],
-            q12: ['同事', '用時', '同時', '用事'],
-            q13: ['食べ物', '買い物', '飲み物', '食み物'],
-            q14: ['期間', '時間', '時聞', '自間'],
-            q15: ['聞きました', '筆きました', '書きました', '事きました'],
-            q16: ['場所', '住所', '名所', '揚所'],
-            q17: ['お茶', 'お金', 'お余', 'お荼'],
-            q18: ['連取', '連習', '練集', '練習'],
-            q19: ['恩います', '思います', '界います', '息います'],
-            q20: ['少いて', '走いて', '歩いて', '赤いて'],
-            q21: ['コンビニ', 'デザイン', 'パーティー', 'ニュース'],
-            q22: ['ぶっか', 'ねだん', 'かいもの', 'みち'],
-            q23: ['ぼうし', 'めがね', 'くつ', 'ネクタイ'],
-            q24: ['ベッド', 'たな', 'つくえ', 'おしいれ'],
-            q25: ['むり', 'むだ', '大丈夫', 'いい'],
-            q26: ['信号', '交通', '店', '場所'],
-            q27: ['なみ', 'こえ', 'とり', 'うち'],
-            q28: ['曲がる', 'すく', 'ひねる', 'まわす'],
-            q29: ['きっと', 'ぜひ', 'だいたい', 'よく'],
-            q30: ['これから', 'つぎに', 'さいきん', 'もちろん'],
-            q31: ['日曜日は よく あそびに 行きます。', '日曜日は あまり でかけません。', '月曜日から 土曜日まで 家に います。', '月曜日から 土曜日まで 家に いません。'],
-            q32: ['私は フランス語を おしえています。', '私は フランス語を かいています。', '私は フランス語を よんでいます。', '私は フランス語を べんきょうしています。'],
-            q33: ['この町には ゆうめいな ビルが あります。', 'この町には ゆうめいな おちゃが あります。', 'この町には ゆうめいな ケーキが あります。', 'この町には ゆうめいな こうえんが あります。'],
-            q34: ['寝る 前に くつを せんたくしました。', '寝る 前に くつを きれいに しました。', '寝る 前に くつを ぬぎました。', '寝る 前に くつを きれいに ならべました。'],
-            q35: ['ほっかいどうの おばさんは、父の あねです。', 'ほっかいどうの おばさんは、父の あにです。', 'ほっかいどうの おばさんは、父の おとうとです。', 'ほっかいどうの おばさんは、父の いもうとです。']
-        };
+    const originalOptions = {
+        q1: ['のぼった', 'のった', 'のりた', 'のぼた'], // Fixed typo from 'હ1' to 'q1'
+        q2: ['しゅりする', 'すりする', 'しゅうりする', 'すうりする'],
+        q3: ['りょうり', 'たてもの', 'けんぶつ', 'きもの'],
+        q4: ['くこう', 'くうこう', 'こうく', 'こうくう'],
+        q5: ['こうつ', 'つうこう', 'こうつう', 'こつう'],
+        q6: ['しゅじん', 'しゅうじん', 'しゅにん', 'しゅうにん'],
+        q7: ['くる', 'つきる', 'かぶる', 'きる'],
+        q8: ['くばって', 'わたって', 'もどって', 'はしって'],
+        q9: ['せつめいして', 'あんないして', 'なおして', 'しょうかいして'],
+        q10: ['かぐ', 'どうぐ', 'かど', 'かどう'],
+        q11: ['ガタログ', 'カダログ', 'カタログ', 'カタロク'],
+        q12: ['同事', '用時', '同時', '用事'],
+        q13: ['食べ物', '買い物', '飲み物', '食み物'],
+        q14: ['期間', '時間', '時聞', '自間'],
+        q15: ['聞きました', '筆きました', '書きました', '事きました'],
+        q16: ['場所', '住所', '名所', '揚所'],
+        q17: ['お茶', 'お金', 'お余', 'お荼'],
+        q18: ['連取', '連習', '練集', '練習'],
+        q19: ['恩います', '思います', '界います', '息います'],
+        q20: ['少いて', '走いて', '歩いて', '赤いて'],
+        q21: ['コンビニ', 'デザイン', 'パーティー', 'ニュース'],
+        q22: ['ぶっか', 'ねだん', 'かいもの', 'みち'],
+        q23: ['ぼうし', 'めがね', 'くつ', 'ネクタイ'],
+        q24: ['ベッド', 'たな', 'つくえ', 'おしいれ'],
+        q25: ['むり', 'むだ', '大丈夫', 'いい'],
+        q26: ['信号', '交通', '店', '場所'],
+        q27: ['なみ', 'こえ', 'とり', 'うち'],
+        q28: ['曲がる', 'すく', 'ひねる', 'まわす'],
+        q29: ['きっと', 'ぜひ', 'だいたい', 'よく'],
+        q30: ['これから', 'つぎに', 'さいきん', 'もちろん'],
+        q31: ['日曜日は よく あそびに 行きます。', '日曜日は あまり でかけません。', '月曜日から 土曜日まで 家に います。', '月曜日から 土曜日まで 家に いません。'],
+        q32: ['私は フランス語を おしえています。', '私は フランス語を かいています。', '私は フランス語を よんでいます。', '私は フランス語を べんきょうしています。'],
+        q33: ['この町には ゆうめいな ビルが あります。', 'この町には ゆうめいな おちゃが あります。', 'この町には ゆうめいな ケーキが あります。', 'この町には ゆうめいな こうえんが あります。'],
+        q34: ['寝る 前に くつを せんたくしました。', '寝る 前に くつを きれいに しました。', '寝る 前に くつを ぬぎました。', '寝る 前に くつを きれいに ならべました。'],
+        q35: ['ほっかいどうの おばさんは、父の あねです。', 'ほっかいどうの おばさんは、父の あにです。', 'ほっかいどうの おばさんは、父の おとうとです。', 'ほっかいどうの おばさんは、父の いもうとです。']
+    };
 
-        let startTime = null;
-        let timerInterval = null;
+    let startTime = null;
+    let timerInterval = null;
 
-        function normalizeString(str) {
-            return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    function normalizeString(str) {
+        return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function getEvaluation(percentage) {
+        if (percentage >= 80) return 'A';
+        if (percentage >= 60) return 'B';
+        if (percentage >= 40) return 'C';
+        if (percentage >= 20) return 'D';
+        return 'F';
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
+        return array;
+    }
 
-        function getEvaluation(percentage) {
-            if (percentage >= 80) return 'A';
-            if (percentage >= 60) return 'B';
-            if (percentage >= 40) return 'C';
-            if (percentage >= 20) return 'D';
-            return 'F';
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function shuffleOptions() {
-            for (let q = 1; q <= 35; q++) {
-                const optionsContainer = document.querySelector(`.question:nth-child(${q + 1}) .options`);
-                if (!optionsContainer) continue;
-                const options = Array.from(optionsContainer.querySelectorAll('.option'));
-                const shuffledOptions = shuffleArray(options.map(option => ({
-                    id: option.querySelector('input').id,
-                    name: option.querySelector('input').name,
-                    checked: option.querySelector('input').checked,
-                    label: option.querySelector('label').textContent
-                })));
-                optionsContainer.innerHTML = '';
-                shuffledOptions.forEach((opt, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'option';
-                    div.innerHTML = `
-                        <input type="radio" id="${opt.id}" name="${opt.name}" ${opt.checked ? 'checked' : ''}>
-                        <label for="${opt.id}">${opt.label}</label>
-                    `;
-                    optionsContainer.appendChild(div);
-                });
-            }
-            // Shuffle example options
-            ['q1-rei', 'q2-rei', 'q3-rei', 'q4-rei'].forEach(name => {
-                const optionsContainer = document.querySelector(`.example .options[name="${name}"]`);
-                if (!optionsContainer) return;
-                const options = Array.from(optionsContainer.querySelectorAll('.option'));
-                const shuffledOptions = shuffleArray(options.map(option => ({
-                    id: option.querySelector('input').id,
-                    name: option.querySelector('input').name,
-                    checked: option.querySelector('input').checked,
-                    label: option.querySelector('label').textContent
-                })));
-                optionsContainer.innerHTML = '';
-                shuffledOptions.forEach((opt, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'option';
-                    div.innerHTML = `
-                        <input type="radio" id="${opt.id}" name="${opt.name}" ${opt.checked ? 'checked' : ''}>
-                        <label for="${opt.id}">${opt.label}</label>
-                    `;
-                    optionsContainer.appendChild(div);
-                });
+    function shuffleOptions() {
+        for (let q = 1; q <= 35; q++) {
+            const optionsContainer = document.querySelector(`.question:nth-child(${q + 1}) .options`);
+            if (!optionsContainer) continue;
+            const options = Array.from(optionsContainer.querySelectorAll('.option'));
+            const shuffledOptions = shuffleArray(options.map(option => ({
+                id: option.querySelector('input').id,
+                name: option.querySelector('input').name,
+                checked: option.querySelector('input').checked,
+                label: option.querySelector('label').textContent
+            })));
+            optionsContainer.innerHTML = '';
+            shuffledOptions.forEach((opt, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.innerHTML = `
+                    <input type="radio" id="${opt.id}" name="${opt.name}" ${opt.checked ? 'checked' : ''}>
+                    <label for="${opt.id}">${opt.label}</label>
+                `;
+                optionsContainer.appendChild(div);
             });
         }
+        // Skip shuffling example options to preserve correct answers
+    }
 
-        function calculateRadioSectionScore(startQuestion, endQuestion, pointsPerQuestion) {
-            let score = 0;
-            for (let i = startQuestion; i <= endQuestion; i++) {
-                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
-                if (selectedOption) {
-                    const userAnswer = selectedOption.nextElementSibling.textContent;
-                    if (userAnswer === answerKey[i]) {
-                        score += pointsPerQuestion;
-                    }
-                    showRadioAnswerFeedback(i);
+    function calculateRadioSectionScore(startQuestion, endQuestion, pointsPerQuestion) {
+        let score = 0;
+        for (let i = startQuestion; i <= endQuestion; i++) {
+            const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+            if (selectedOption) {
+                const userAnswer = selectedOption.nextElementSibling.textContent;
+                if (userAnswer === answerKey[i]) {
+                    score += pointsPerQuestion;
                 }
-            }
-            return score;
-        }
-
-        function showRadioAnswerFeedback(questionNumber) {
-            const feedbackElement = document.getElementById(`feedback-${questionNumber}`);
-            const selectedOption = document.querySelector(`input[name="q${questionNumber}"]:checked`);
-            if (!selectedOption) {
-                feedbackElement.textContent = 'Bạn chưa chọn đáp án.';
-                feedbackElement.classList.add('wrong');
-                return;
-            }
-            const userAnswer = selectedOption.nextElementSibling.textContent;
-            if (userAnswer === answerKey[questionNumber]) {
-                feedbackElement.textContent = 'Đúng!';
-                feedbackElement.classList.remove('wrong');
-            } else {
-                feedbackElement.textContent = `Sai. Đáp án đúng là: ${answerKey[questionNumber]}`;
-                feedbackElement.classList.add('wrong');
+                showRadioAnswerFeedback(i);
             }
         }
+        return score;
+    }
 
-        function formatTime(date) {
-            return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    function showRadioAnswerFeedback(questionNumber) {
+        const feedbackElement = document.getElementById(`feedback-${questionNumber}`);
+        const selectedOption = document.querySelector(`input[name="q${questionNumber}"]:checked`);
+        if (!selectedOption) {
+            feedbackElement.textContent = 'Bạn chưa chọn đáp án.';
+            feedbackElement.classList.add('wrong');
+            return;
         }
+        const userAnswer = selectedOption.nextElementSibling.textContent;
+        if (userAnswer === answerKey[questionNumber]) {
+            feedbackElement.textContent = 'Đúng!';
+            feedbackElement.classList.remove('wrong');
+        } else {
+            feedbackElement.textContent = `Sai. Đáp án đúng là: ${answerKey[questionNumber]}`;
+            feedbackElement.classList.add('wrong');
+        }
+    }
 
-        function startTimer() {
-            startTime = new Date();
-            const endTime = new Date(startTime.getTime() + 25 * 60 * 1000);
-            const timerElement = document.getElementById('timer');
+    function formatTime(date) {
+        return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
 
-            timerInterval = setInterval(() => {
-                const now = new Date();
-                const timeLeft = endTime - now;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    timerElement.textContent = 'Hết giờ!';
-                    timerElement.classList.add('warning');
-                    submitTest();
+    function startTimer() {
+        startTime = new Date();
+        const endTime = new Date(startTime.getTime() + 25 * 60 * 1000);
+        const timerElement = document.getElementById('timer');
+
+        timerInterval = setInterval(() => {
+            const now = new Date();
+            const timeLeft = endTime - now;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = 'Hết giờ! Vui lòng nộp bài.';
+                timerElement.classList.add('warning');
+                const name = document.getElementById('name').value.trim();
+                const className = document.getElementById('class').value.trim();
+                const dateInput = document.getElementById('date').value;
+                if (!name || !className || !dateInput) {
+                    document.getElementById('message-result').textContent = 'Vui lòng điền đầy đủ thông tin cá nhân trước khi nộp bài.';
                     return;
                 }
-                const minutes = Math.floor(timeLeft / 1000 / 60);
-                const seconds = Math.floor((timeLeft / 1000) % 60);
-                timerElement.textContent = `Thời gian còn lại: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                if (timeLeft <= 5 * 60 * 1000) {
-                    timerElement.classList.add('warning');
-                }
-            }, 1000);
-        }
-
-        function checkPassword() {
-            const passwordInput = document.getElementById('password-input').value;
-            const passwordError = document.getElementById('password-error');
-            if (passwordInput === '112') {
-                window.location.href = 'history.html';
-            } else {
-                passwordError.textContent = 'Mật khẩu không đúng. Vui lòng thử lại.';
-                document.getElementById('password-input').value = '';
+                submitTest();
+                return;
             }
-        }
+            const minutes = Math.floor(timeLeft / 1000 / 60);
+            const seconds = Math.floor((timeLeft / 1000) % 60);
+            timerElement.textContent = `Thời gian còn lại: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            if (timeLeft <= 5 * 60 * 1000) {
+                timerElement.classList.add('warning');
+            }
+        }, 1000);
+    }
 
-        function showPasswordModal() {
-            document.getElementById('password-modal').style.display = 'flex';
-            document.getElementById('password-input').focus();
-        }
-
-        function closePasswordModal() {
-            document.getElementById('password-modal').style.display = 'none';
+    function checkPassword() {
+        const passwordInput = document.getElementById('password-input').value;
+        const passwordError = document.getElementById('password-error');
+        if (passwordInput === '112') {
+            window.location.href = 'history.html';
+        } else {
+            passwordError.textContent = 'Mật khẩu không đúng. Vui lòng thử lại.';
             document.getElementById('password-input').value = '';
-            document.getElementById('password-error').textContent = '';
+        }
+    }
+
+    function showPasswordModal() {
+        document.getElementById('password-modal').style.display = 'flex';
+        document.getElementById('password-input').focus();
+    }
+
+    function closePasswordModal() {
+        document.getElementById('password-modal').style.display = 'none';
+        document.getElementById('password-input').value = '';
+        document.getElementById('password-error').textContent = '';
+    }
+
+    window.checkPassword = checkPassword;
+    window.showPasswordModal = showPasswordModal;
+    window.closePasswordModal = closePasswordModal;
+    window.resetTest = resetTest;
+
+    async function submitTest() {
+        const endTime = new Date();
+        const name = document.getElementById('name').value.trim();
+        const className = document.getElementById('class').value.trim();
+        const dateInput = document.getElementById('date').value;
+        const messageResult = document.getElementById('message-result');
+        const resultSection = document.getElementById('results');
+        const scoreDisplay = document.getElementById('score-display');
+
+        if (!name || !className || !dateInput) {
+            messageResult.textContent = 'Vui lòng điền đầy đủ thông tin cá nhân.';
+            return;
         }
 
-        window.checkPassword = checkPassword;
-        window.showPasswordModal = showPasswordModal;
-        window.closePasswordModal = closePasswordModal;
-        window.resetTest = resetTest;
+        clearInterval(timerInterval);
+        document.getElementById('timer').style.display = 'none';
+        document.getElementById('submit-test').style.display = 'none';
 
-        async function submitTest() {
-            const endTime = new Date();
-            const name = document.getElementById('name').value.trim();
-            const className = document.getElementById('class').value.trim();
-            const dateInput = document.getElementById('date').value;
-            const messageResult = document.getElementById('message-result');
-            const resultSection = document.getElementById('results');
-            const scoreDisplay = document.getElementById('score-display');
+        const section1Score = calculateRadioSectionScore(1, 10, 2);
+        const section2Score = calculateRadioSectionScore(11, 20, 2);
+        const section3Score = calculateRadioSectionScore(21, 30, 4);
+        const section4Score = calculateRadioSectionScore(31, 35, 4);
+        const totalScore = section1Score + section2Score + section3Score + section4Score;
+        const percentage = Math.round((totalScore / 100) * 100);
+        const evaluation = getEvaluation(percentage);
+        const rankClass = evaluation === 'A' ? 'rank-a' : evaluation === 'F' ? 'rank-f' : '';
 
-            if (!name || !className || !dateInput) {
-                messageResult.textContent = 'Vui lòng điền đầy đủ thông tin cá nhân.';
-                return;
-            }
+        const resultTable = `
+            <div class="student-details">
+                <p><strong>Tên:</strong> ${name}</p>
+                <p><strong>Lớp:</strong> ${className}</p>
+                <p><strong>Ngày:</strong> ${dateInput}</p>
+            </div>
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th>問題 I</th>
+                        <th>問題 II</th>
+                        <th>問題 III</th>
+                        <th>問題 IV</th>
+                        <th>Tổng</th>
+                        <th>Tỷ lệ</th>
+                        <th>Xếp loại</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${section1Score}/${sectionPoints[1]}</td>
+                        <td>${section2Score}/${sectionPoints[2]}</td>
+                        <td>${section3Score}/${sectionPoints[3]}</td>
+                        <td>${section4Score}/${sectionPoints[4]}</td>
+                        <td>${totalScore}/100</td>
+                        <td>${percentage}%</td>
+                        <td class="${rankClass}">${evaluation}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="window.resetTest()">Làm lại bài kiểm tra</button>
+            <button onclick="window.showPasswordModal()">Xem lịch sử kiểm tra</button>
+        `;
+        scoreDisplay.innerHTML = resultTable;
+        resultSection.style.display = 'block';
 
-            clearInterval(timerInterval);
-            document.getElementById('timer').style.display = 'none';
-            document.getElementById('submit-test').style.display = 'none';
+        // Save to Firestore in testHistorytuvung19-25 collection
+        const testData = {
+            name: name,
+            class: className,
+            date: dateInput,
+            section1Score: section1Score,
+            section2Score: section2Score,
+            section3Score: section3Score,
+            section4Score: section4Score,
+            totalScore: totalScore,
+            percentage: percentage,
+            evaluation: evaluation,
+            startTime: formatTime(startTime),
+            endTime: formatTime(endTime)
+        };
 
-            const section1Score = calculateRadioSectionScore(1, 10, 2);
-            const section2Score = calculateRadioSectionScore(11, 20, 2);
-            const section3Score = calculateRadioSectionScore(21, 30, 4);
-            const section4Score = calculateRadioSectionScore(31, 35, 4);
-            const totalScore = section1Score + section2Score + section3Score + section4Score;
-            const percentage = Math.round((totalScore / 100) * 100);
-            const evaluation = getEvaluation(percentage);
-            const rankClass = evaluation === 'A' ? 'rank-a' : evaluation === 'F' ? 'rank-f' : '';
-
-            const resultTable = `
-                <div class="student-details">
-                    <p><strong>Tên:</strong> ${name}</p>
-                    <p><strong>Lớp:</strong> ${className}</p>
-                    <p><strong>Ngày:</strong> ${dateInput}</p>
-                </div>
-                <table class="result-table">
-                    <thead>
-                        <tr>
-                            <th>問題 I</th>
-                            <th>問題 II</th>
-                            <th>問題 III</th>
-                            <th>問題 IV</th>
-                            <th>Tổng</th>
-                            <th>Tỷ lệ</th>
-                            <th>Xếp loại</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>${section1Score}/${sectionPoints[1]}</td>
-                            <td>${section2Score}/${sectionPoints[2]}</td>
-                            <td>${section3Score}/${sectionPoints[3]}</td>
-                            <td>${section4Score}/${sectionPoints[4]}</td>
-                            <td>${totalScore}/100</td>
-                            <td>${percentage}%</td>
-                           <td class="${rankClass}">${evaluation}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button onclick="window.resetTest()">Làm lại bài kiểm tra</button>
-                <button onclick="window.showPasswordModal()">Xem lịch sử kiểm tra</button>
-            `;
-            scoreDisplay.innerHTML = resultTable;
-            resultSection.style.display = 'block';
-
-            // Save to Firestore
-            const testData = {
-                name: name,
-                class: className,
-                date: dateInput,
-                section1Score: section1Score,
-                section2Score: section2Score,
-                section3Score: section3Score,
-                section4Score: section4Score,
-                totalScore: totalScore,
-                percentage: percentage,
-                evaluation: evaluation,
-                startTime: formatTime(startTime),
-                endTime: formatTime(endTime)
-            };
-
-            try {
-                await addDoc(collection(db, "testResults"), testData);
-            } catch (e) {
-                console.error("Error adding document: ", e);
-            }
-
-            // Shuffle options after submission
-            shuffleOptions();
+        try {
+            await addDoc(collection(db, "testHistorytuvung19-25"), testData);
+            messageResult.textContent = 'Kết quả đã được lưu thành công!';
+        } catch (e) {
+            console.error("Error adding document: ", e);
+            messageResult.textContent = 'Lỗi khi lưu kết quả. Vui lòng thử lại.';
         }
 
-        function resetTest() {
-            document.getElementById('name').value = '';
-            document.getElementById('class').value = '';
-            document.getElementById('date').value = '';
-            document.getElementById('message-info').textContent = '';
-            document.getElementById('message-result').textContent = '';
-            document.getElementById('results').style.display = 'none';
-            document.getElementById('timer').style.display = 'none';
-            document.getElementById('start-test').style.display = 'inline-block';
-            document.getElementById('history-test').style.display = 'inline-block';
-            document.getElementById('submit-test').style.display = 'none';
-            document.querySelectorAll('.question-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            document.querySelectorAll('input[type="radio"]').forEach(input => {
-                input.checked = false;
-            });
-            document.querySelectorAll('.answer-feedback').forEach(feedback => {
-                feedback.textContent = '';
-                feedback.classList.remove('wrong');
-            });
-            clearInterval(timerInterval);
-            // Shuffle options for a new test
-            shuffleOptions();
-        }
+        // Shuffle options after submission
+        shuffleOptions();
+    }
 
-        document.getElementById('start-test').addEventListener('click', () => {
-            const name = document.getElementById('name').value.trim();
-            const className = document.getElementById('class').value.trim();
-            const dateInput = document.getElementById('date').value;
-            const messageInfo = document.getElementById('message-info');
-
-            if (!name || !className || !dateInput) {
-                messageInfo.textContent = 'Vui lòng điền đầy đủ thông tin cá nhân.';
-                return;
-            }
-
-            messageInfo.textContent = '';
-            document.getElementById('start-test').style.display = 'none';
-            document.getElementById('history-test').style.display = 'none';
-            document.getElementById('submit-test').style.display = 'inline-block';
-            document.getElementById('timer').style.display = 'block';
-            document.querySelectorAll('.question-section').forEach(section => {
-                section.style.display = 'block';
-            });
-            startTimer();
-            // Shuffle options at the start of the test
-            shuffleOptions();
+    function resetTest() {
+        document.getElementById('name').value = '';
+        document.getElementById('class').value = '';
+        document.getElementById('date').value = '';
+        document.getElementById('message-info').textContent = '';
+        document.getElementById('message-result').textContent = '';
+        document.getElementById('results').style.display = 'none';
+        document.getElementById('timer').style.display = 'none';
+        document.getElementById('start-test').style.display = 'inline-block';
+        document.getElementById('history-test').style.display = 'inline-block';
+        document.getElementById('submit-test').style.display = 'none';
+        document.querySelectorAll('.question-section').forEach(section => {
+            section.style.display = 'none';
         });
+        document.querySelectorAll('input[type="radio"]').forEach(input => {
+            input.checked = false;
+        });
+        document.querySelectorAll('.answer-feedback').forEach(feedback => {
+            feedback.textContent = '';
+            feedback.classList.remove('wrong');
+        });
+        clearInterval(timerInterval);
+        // Shuffle options for a new test
+        shuffleOptions();
+    }
 
-        document.getElementById('submit-test').addEventListener('click', submitTest);
-    </script>
+    document.getElementById('start-test').addEventListener('click', () => {
+        const name = document.getElementById('name').value.trim();
+        const className = document.getElementById('class').value.trim();
+        const dateInput = document.getElementById('date').value;
+        const messageInfo = document.getElementById('message-info');
+
+        if (!name || !className || !dateInput) {
+            messageInfo.textContent = 'Vui lòng điền đầy đủ thông tin cá nhân.';
+            return;
+        }
+
+        messageInfo.textContent = '';
+        document.getElementById('start-test').style.display = 'none';
+        document.getElementById('history-test').style.display = 'none';
+        document.getElementById('submit-test').style.display = 'inline-block';
+        document.getElementById('timer').style.display = 'block';
+        document.querySelectorAll('.question-section').forEach(section => {
+            section.style.display = 'block';
+        });
+        startTimer();
+        // Shuffle options at the start of the test
+        shuffleOptions();
+    });
+
+    document.getElementById('submit-test').addEventListener('click', submitTest);
+</script>
 </body>
 </html>
