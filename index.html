@@ -1426,19 +1426,20 @@
 
             // Save to Firestore in testHistorytuvung19-25 collection
             const testData = {
-                name: name,
-                class: className,
-                date: dateInput,
-                section1Score: section1Score,
-                section2Score: section2Score,
-                section3Score: section3Score,
-                section4Score: section4Score,
-                totalScore: totalScore,
-                percentage: percentage,
-                evaluation: evaluation,
-                startTime: formatTime(startTime),
-                endTime: formatTime(endTime)
-            };
+    name: name,
+    class: className,
+    date: dateInput,
+    section1Score: section1Score,
+    section2Score: section2Score,
+    section3Score: section3Score,
+    section4Score: section4Score,
+    totalScore: totalScore,
+    percentage: percentage,
+    evaluation: evaluation,
+    startTime: formatTime(startTime),
+    endTime: formatTime(endTime),
+    submittedAt: new Date()   // ← Dòng quan trọng nhất! Đây là Timestamp thật
+};
 
             try {
                 await addDoc(collection(db, "testHistorytuvung19-25"), testData);
