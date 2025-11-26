@@ -189,8 +189,8 @@
             tbody.innerHTML = '<tr><td colspan="13">Đang tải...</td></tr>';
 
             try {
-                const q = query(collection(db, "testHistorytuvung19-25"), orderBy("endTime", "desc"));
-                const snapshot = await getDocs(q);
+const q = query(collection(db, "testHistorytuvung19-25"), orderBy("submittedAt", "desc"));
+const snapshot = await getDocs(q);
 
                 let rows = '';
                 const term = search.trim().toLowerCase();
